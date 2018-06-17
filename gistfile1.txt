@@ -1,0 +1,172 @@
+var x = 50 , y = 98, z = 15 , p = 220 , disparo = false , xd , yd , xj , yj , q = 0 , t = 0 , colidir = false;
+
+var vidas = 3 , pontuacao = 0 , nivel = 1;
+
+var tamBloco = 40 , imgParede; 
+
+
+
+
+function preload() {
+  //imgParede = loadImage("tijolo.png"); 
+}
+
+cenario = [ 
+  ['#','#','#','#','#','#','#','#','#','#','#'],
+  ['#','v','v','v','v','v','v','v','v','v','#'],
+  ['#','v','#','v','#','v','#','v','#','v','#'],
+  ['#','v','v','v','v','v','v','v','v','v','#'],
+  ['#','v','#','v','#','v','#','v','#','v','#'],
+  ['#','v','v','v','v','v','v','v','v','v','#'],
+  ['#','v','#','v','#','v','#','v','#','v','#'],
+  ['#','v','v','v','v','v','v','v','v','v','#'],
+  ['#','v','#','v','#','v','#','v','#','v','#'],
+  ['#','v','v','v','v','v','v','v','v','v','#'],
+  ['#','#','#','#','#','#','#','#','#','#','#'],
+
+]; 
+
+function pacMan(posPacX, posPacY) {
+  stroke(250,250,5); 
+  strokeWeight(3); 
+  fill(230,230,0);
+  arc(posPacX+2, posPacY+2, tamBloco -6, tamBloco-6, PI/6,TWO_PI - PI/6, PIE);
+  strokeWeight(1); 
+  fill(0,0,0);
+  ellipse(posPacX,posPacY-(tamBloco)/5,tamBloco/6, tamBloco/6);    
+}
+
+function colisao(px, py) {
+  posColuna = Math.floor( px / tamBloco ); 
+  posLinha = Math.floor( py / tamBloco );
+  if ( cenario[posLinha][posColuna] == '#' ) {
+     return true;     
+  }
+  else {
+     return false;  
+  }
+  
+}
+
+function setup() {
+ createCanvas(440,510);
+ x = 60; 
+ y = 60; 
+}
+
+function draw() {
+  background(0); 
+  
+  
+  for ( i = 0; i < cenario.length; i++ ) { 
+    for ( j = 0; j < cenario[0].length; j++ ) {  
+      if ( cenario[i][j] == '#' ) {
+        //image(imgParede,j*tamBloco,i*tamBloco); 
+        fill(100,100,255);
+        rect(j*tamBloco,i*tamBloco,tamBloco,tamBloco); 
+      }
+    }
+  }
+//movimentação
+   if (keyIsDown(LEFT_ARROW)) {
+     if ( ! colisao( x - 4, y ) ) {
+       x = x - 4;       
+     }
+   }
+   if ( keyIsDown(RIGHT_ARROW)) { 
+     if ( ! colisao( x + 4, y ) ) {
+       x = x + 4;       
+     } 
+   }
+  if ( keyIsDown(UP_ARROW)) { 
+     if ( ! colisao( y - 4, x ) ) {
+       y = y - 4;       
+     } 
+   }
+  if ( keyIsDown(DOWN_ARROW)) { 
+     if ( ! colisao( y + 4, x ) ) {
+       y = y + 4;       
+     } 
+   }
+   
+   pacMan(x,y); 
+  
+  //disparo 
+  
+  if (keyIsDown(CONTROL) && (! disparo) ){ 
+    disparo = true; 
+    xd = x;
+    yd = y; 
+    }
+
+   if (disparo) {
+    fill(150,200,80);
+    ellipse(xd,yd,8,8);
+
+  if (disparo) {
+    xd = xd + 7.5;
+    if (xd > width||xd==z) {
+      disparo = false; 
+    	}
+ 	 }
+   }    
+  
+  //objetos aleatórios
+  
+  fill(0,0,200)
+  ellipse(z,p,30,30); 
+  fill(0,100,200);
+  ellipse(z,p,15,15);
+  fill(0,100,0);
+  ellipse(z,p,(8),(8));
+  z = z + 2;
+  if(z > 750){
+    z = 0;
+  }
+  
+  fill(230, 237, 30);
+  ellipse(q,t,20,20);
+  q = 220
+  t = t + 1.5;
+  if(t > 400){
+    t = -1100;
+  }
+  
+  
+  //informações
+
+if(dist(xd,yd,z,p)<15+4){
+  colidir = true;
+}
+
+if(colidir){
+  pontuacao = pontuacao + 1;
+  colidir = false;
+  xd = 450;
+  z = 490;
+}
+
+if(dist(xd,yd,q,t)<5+4){
+  colidir = false;
+  vidas = vidas + 1;
+  t = -1100;
+  
+}
+
+if(dist(x,y,z,p)<20+15){
+  coldir = true;
+  vidas = vidas - 1;
+  z = 490;
+}
+  
+  if(vidas === 0){
+    textSize(35)
+    text("GAME OVER",130,240);
+  }
+  
+  fill(250,250,250);
+  textSize(22);
+  text("Pontos: "+pontuacao,0,460);
+  text("Vidas: "+vidas,0,500);
+  text("Nível: "+nivel,180,460);
+}
